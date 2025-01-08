@@ -1,0 +1,26 @@
+<html>
+<head>
+    <title>Crater & Boulder Detector</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-image: url('https://placehold.co/800x600?text=Moon+Image'); /* Placeholder for the moon image */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen bg-black bg-opacity-75">
+    <div class="text-center text-white">
+        <h1 class="text-3xl font-bold mb-2">Welcome to Crater & Boulder Detector</h1>
+        <p class="mb-4">The Ultimate Tool for Detecting Craters & Boulders from OREx Images!</p>
+        <button class="bg-blue-500 text-white py-2 px-4 rounded mb-2">Drop Files Here</button>
+        <br>
+        <label for="file-upload" class="bg-white text-blue-500 py-2 px-4 rounded cursor-pointer">Choose Files</label>
+        <input id="file-upload" type="file" class="hidden">
+    </div>
+</body>
+</html>

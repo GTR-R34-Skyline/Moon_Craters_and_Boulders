@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crater & Boulder Detector</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-image: url('/static/main.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
+
+        #drop-area {
+            border: 2px dashed white;
+            padding: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+            margin-top: 30px;
+        }
+
+        #drop-area.dragover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        img {
+            max-width: 100px;
+            max-height: 100px;
+            margin: 10px;
+            border: 2px solid white;
+            border-radius: 5px;
+        }
+
+        .progress-bar {
+            height: 5px;
+            background-color: #4CAF50;
+            width: 0;
+            transition: width 0.3s;
+        }
+
+        .logo {
+            width: 100px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .content {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .content h1 {
+            font-size: 4rem;
+        }
+
+        .content p {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+        }
+
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <img src="/static/logo.jpg" alt="Logo" class="logo">
+
+    <div class="content">
+        <h1 class="font-bold mb-4">Welcome to Crater & Boulder Detector</h1>
+        <p>The Ultimate Tool for Detecting Craters & Boulders from OREx Images!</p>
+
+        <!-- Form to handle file upload -->
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <!-- Drop Area -->
+            <div id="drop-area" class="bg-blue-500 text-white py-2 px-4 rounded mb-2">
+                Drop Files Here
+            </div>
+            <br>
+            <label for="file-upload" class="bg-white text-blue-500 py-2 px-4 rounded cursor-pointer">Choose Files</label>
+            <input id="file-upload" type="file" class="hidden" name="files" multiple>
+
+            <!-- Progress Bar -->
+            <div class="mt-4">
+                <div class="progress-bar" id="progress-bar"></div>
+                <p id="upload-status" class="mt-2"></p>
+            </div>
+
+            <!-- Preview Section -->
+            <div id="preview" class="mt-4"></div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-upload');
+        const preview = document.getElementById('preview');
+        const progressBar = document.getElementById('progress-bar');
+        const uploadStatus = document.getElementById('upload-status');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(() => {
+            dropArea.classList.add('dragover');
+        });
+
+        ['dragleave', 'drop'].forEach(() => {
+            dropArea.classList.remove('dragover');
+        });
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            fileInput.files = files;
+            preview.innerHTML = '';
+
+            const totalFiles = files.length;
+            let uploadedFiles = 0;
+
+            [...files].forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = file.name;
+                    preview.appendChild(img);
+
+                    uploadedFiles++;
+                    const progress = (uploadedFiles / totalFiles) * 100;
+                    progressBar.style.width = progress + '%';
+
+                    if (progress === 100) {
+                        uploadStatus.textContent = 'Upload completed successfully';
+                    } else {
+                        uploadStatus.textContent = Math.round(progress) + '% uploaded';
+                    }
+                };
+                reader.onerror = (error) => {
+                    console.error('Error reading file:', error);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(fileInput.files);
+        });
+    </script>
+</body>
+</html>
